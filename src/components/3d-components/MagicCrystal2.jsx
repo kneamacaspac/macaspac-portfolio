@@ -17,8 +17,8 @@ import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
  * (Vite serves anything in `public/` from the site root), then point
  * `modelUrl` at wherever you placed scene.gltf.
  */
-export default function MagicCrystal({
-  modelUrl = "/assets/3d-assets/enchanted_crystal/scene.gltf",
+export default function MagicCrystal2({
+  modelUrl = "/assets/3d-assets/enchanted_crystal_3/scene.gltf",
   className = "",
 }) {
   const stageRef = useRef(null);
@@ -53,7 +53,7 @@ export default function MagicCrystal({
       0.1,
       100,
     );
-    camera.position.set(4.5, 1.5, 12);
+    camera.position.set(4.5, 9, 3);
 
     const renderer = new THREE.WebGLRenderer({
       canvas,
@@ -131,7 +131,7 @@ export default function MagicCrystal({
       (gltf) => {
         if (disposed) return;
         crystal = gltf.scene;
-        crystal.scale.set(60, 60, 60);
+        crystal.scale.set(180, 180, 180);
 
         crystal.traverse((child) => {
           if (child.isMesh) {
