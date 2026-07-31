@@ -23,15 +23,15 @@ export default function Home({
 
   return (
     <>
+      <div className="absolute inset-0 z-0">
+        <StarField />
+      </div>
+
       <FadeInSection>
         <section
           id="hero"
-          className="flex h-screen flex-col items-center justify-center relative z-0 overflow-hidden"
+          className="flex h-screen flex-col items-center justify-center relative z-10 overflow-hidden"
         >
-          <div className="absolute inset-0 z-0">
-            <StarField />
-          </div>
-
           {/* Fade the starfield into the next section's background color */}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-80 z-[5] bg-gradient-to-b from-transparent to-[#07040f]" />
 
@@ -75,7 +75,7 @@ export default function Home({
 
       <FadeInSection>
         <section id="about-sec">
-          <section className="relative min-h-screen overflow-hidden bg-[#05030D]  px-6 py-24 sm:px-12 lg:px-20">
+          <section className="relative min-h-screen z-10 overflow-hidden px-6 py-24 sm:px-12 lg:px-20">
             {/* Ambient background glow */}
             <div className="pointer-events-none absolute inset-0">
               <div className="absolute left-1/2 top-0 h-[600px] w-[900px] -translate-x-1/2 rounded-full  blur-[120px]" />
@@ -167,61 +167,6 @@ export default function Home({
           </div>
         </div>
       </section>
-
-      <FadeInSection>
-        <section id="about-sec">
-          <section className="relative min-h-screen overflow-hidden bg-[#05030D]  px-6 py-24 sm:px-12 lg:px-20">
-            {/* Ambient background glow */}
-            <div className="pointer-events-none absolute inset-0">
-              <div className="absolute left-1/2 top-0 h-[600px] w-[900px] -translate-x-1/2 rounded-full  blur-[120px]" />
-              <div className="absolute right-0 top-1/3 h-[400px] w-[400px] rounded-full bg-fuchsia-600/10 blur-[100px]" />
-            </div>
-
-            <div className="relative mx-auto max-w-6xl">
-              {/* Headline */}
-              <h1 className="mx-auto max-w-4xl text-center font-serif text-4xl leading-tight tracking-wide text-slate-100 sm:text-5xl">
-                I design digital experiences that feel alive and make an impact.
-              </h1>
-
-              {/* Content row: copy + button on the left, portrait on the right */}
-              <div className="relative mt-16 grid grid-cols-1 items-center gap-12 md:grid-cols-2">
-                {/* Left column */}
-                <div className="max-w-md">
-                  <p className="text-sm leading-relaxed text-slate-300 sm:text-base">
-                    I create interactive interfaces that feel alive, combining
-                    thoughtful design and technology to create experiences that
-                    make an impact.
-                  </p>
-
-                  <button className="mt-6 rounded-full border border-slate-500/60 px-5 py-2 text-sm text-slate-200 transition hover:border-purple-400 hover:bg-purple-400/10">
-                    Learn more
-                  </button>
-                </div>
-
-                {/* Right column: portrait with glow + squiggle */}
-                <div className="relative mx-auto flex h-72 w-72 items-center justify-center sm:h-80 sm:w-80">
-                  {/* Soft glow behind the portrait */}
-                  <div className="absolute h-56 w-56 rounded-full bg-purple-500/40 blur-3xl" />
-
-                  {/* Portrait */}
-                  <img
-                    src={avatarSrc}
-                    alt="Portrait"
-                    className="relative z-10 h-48 w-48 rounded-full object-cover ring-1 ring-purple-500/30 sm:h-56 sm:w-56"
-                  />
-                </div>
-              </div>
-
-              {/* Bottom-right supporting paragraph */}
-              <p className="mt-12 max-w-sm text-right text-sm leading-relaxed text-slate-300 sm:ml-auto sm:text-base">
-                I also explore how AI can be integrated into the industry to
-                enhance digital experiences, streamline creative processes, and
-                shape the future of interactive design.
-              </p>
-            </div>
-          </section>
-        </section>
-      </FadeInSection>
     </>
   );
 }
