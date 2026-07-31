@@ -1,53 +1,139 @@
-// src/components/3d/MagicCrystal.jsx
-import { useRef, useState, Suspense } from "react";
+import { Suspense, useMemo, useRef, useState, useCallback } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useGLTF, Environment } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
 
 /**
- * The crystal mesh itself — loads the GLTF, auto-rotates,
- * and pulses its emissive glow up on hover.
+ * <MagicCrystal /> - a drop-in, self-contained, interactive 3D crystal.
+ *
+ * Usage:
+ *   import MagicCrystal from "./MagicCrystal";
+ *   <MagicCrystal scale={0.5} style={{ width: 400, height: 400 }} />
+ *
+ * Requires:
+ *   npm install three @react-three/fiber @react-three/drei @react-three/postprocessing
+ *
+ * Expected file layout (matches your GLTF export):
+ *   /public/assets/3d-assets/enchanted_crystal/scene.gltf
+ *   /public/assets/3d-assets/enchanted_crystal/scene.bin
+ *   /public/assets/3d-assets/enchanted_crystal/textures/*.png
+ *
+ * Behavior:
+ *   - Auto-rotates slowly when idle
+ *   - Glows brighter on hover (real emissiveIntensity, not a CSS trick)
+ *   - Tilts subtly toward the cursor while hovering (parallax feel)
+ *   - Click-and-drag to spin it manually (auto-rotate pauses while dragging,
+ *     resumes automatically after you let go)
  */
-function CrystalModel(props) {
+
+const DEFAULT_MODEL_PATH = "/assets/3d-assets/enchanted_crystal/scene.gltf";
+
+function CrystalModel({
+  modelPath,
+  autoRotateSpeed,
+  baseIntensity,
+  hoverIntensity,
+  scale,
+}) {
+  const { scene } = useGLTF(modelPath);
   const groupRef = useRef();
   const [hovered, setHovered] = useState(false);
 
-  // useGLTF caches the load, so multiple <MagicCrystal /> instances
-  // on the page won't re-fetch the file each time.
-  const { scene } = useGLTF("./assets/3d-assets/enchanted_crystal/scene.gltf");
+  // Smoothed glow intensity (eases in/out instead of snapping).
+  const glow = useRef(baseIntensity);
 
-  // Give every mesh in the model an emissive glow, since most
-  // exported GLTF materials default to emissiveIntensity: 0.
-  // We clone the material so we don't mutate the cached/shared one.
-  useState(() => {
-    scene.traverse((child) => {
+  // Cursor-driven tilt target, in radians.
+  const tiltTarget = useRef({ x: 0, y: 0 });
+
+  // Drag-to-rotate state.
+  const dragging = useRef(false);
+  const lastPointer = useRef({ x: 0, y: 0 });
+  const dragRotation = useRef({ x: 0, y: 0 });
+
+  // Clone the scene once so multiple <MagicCrystal /> instances on the same
+  // page don't share (and fight over) the same material instance.
+  const cloned = useMemo(() => {
+    const clone = scene.clone(true);
+    clone.traverse((child) => {
       if (child.isMesh) {
         child.material = child.material.clone();
-        if (!child.material.emissive) {
-          child.material.emissive = new THREE.Color("#a855f7");
-        } else {
-          child.material.emissive.set("#a855f7"); // violet glow — change to taste
-        }
-        child.material.emissiveIntensity = 0.6;
+        // Make sure three.js reads KHR_materials_emissive_strength correctly.
+        child.material.toneMapped = false;
       }
     });
-  });
+    return clone;
+  }, [scene]);
 
-  // Auto-rotate every frame, and smoothly ramp the glow up/down on hover
-  // rather than snapping, so it feels alive instead of a hard on/off toggle.
+  const handlePointerMove = useCallback((e) => {
+    if (dragging.current) {
+      // Rotate based on how far the pointer has moved since last frame.
+      const dx = e.clientX - lastPointer.current.x;
+      const dy = e.clientY - lastPointer.current.y;
+      dragRotation.current.y += dx * 0.01;
+      dragRotation.current.x += dy * 0.01;
+      lastPointer.current = { x: e.clientX, y: e.clientY };
+    } else {
+      // Convert pointer position within the mesh (-1 to 1) into a subtle tilt.
+      tiltTarget.current = {
+        x: THREE.MathUtils.clamp(e.pointer.y, -1, 1) * -0.3,
+        y: THREE.MathUtils.clamp(e.pointer.x, -1, 1) * 0.3,
+      };
+    }
+  }, []);
+
+  const handlePointerDown = useCallback((e) => {
+    e.stopPropagation();
+    e.target.setPointerCapture?.(e.pointerId);
+    dragging.current = true;
+    lastPointer.current = { x: e.clientX, y: e.clientY };
+    document.body.style.cursor = "grabbing";
+  }, []);
+
+  const handlePointerUp = useCallback(
+    (e) => {
+      dragging.current = false;
+      document.body.style.cursor = hovered ? "grab" : "auto";
+    },
+    [hovered],
+  );
+
   useFrame((_, delta) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y += delta * 0.4; // rotation speed
-    }
-    scene.traverse((child) => {
-      if (child.isMesh) {
-        const target = hovered ? 2.2 : 0.6; // brighter glow on hover
-        child.material.emissiveIntensity = THREE.MathUtils.lerp(
-          child.material.emissiveIntensity,
-          target,
-          delta * 4, // ramp speed
+      if (dragging.current) {
+        // While dragging, the user is fully in control of rotation.
+        groupRef.current.rotation.y = dragRotation.current.y;
+        groupRef.current.rotation.x = THREE.MathUtils.clamp(
+          dragRotation.current.x,
+          -0.8,
+          0.8,
         );
+      } else {
+        // Idle: keep auto-rotating on Y, ease X/Z toward the cursor tilt.
+        dragRotation.current.y += delta * autoRotateSpeed;
+        groupRef.current.rotation.y = dragRotation.current.y;
+        groupRef.current.rotation.x = THREE.MathUtils.damp(
+          groupRef.current.rotation.x,
+          tiltTarget.current.x,
+          4,
+          delta,
+        );
+        groupRef.current.rotation.z = THREE.MathUtils.damp(
+          groupRef.current.rotation.z,
+          tiltTarget.current.y,
+          4,
+          delta,
+        );
+      }
+    }
+
+    // Smoothly interpolate emissive intensity toward the hover target.
+    const target = hovered ? hoverIntensity : baseIntensity;
+    glow.current = THREE.MathUtils.damp(glow.current, target, 6, delta);
+
+    cloned.traverse((child) => {
+      if (child.isMesh && child.material) {
+        child.material.emissiveIntensity = glow.current;
       }
     });
   });
@@ -55,45 +141,69 @@ function CrystalModel(props) {
   return (
     <group
       ref={groupRef}
-      {...props}
+      scale={scale}
       onPointerOver={(e) => {
         e.stopPropagation();
         setHovered(true);
+        document.body.style.cursor = "grab";
       }}
       onPointerOut={(e) => {
         e.stopPropagation();
         setHovered(false);
+        tiltTarget.current = { x: 0, y: 0 };
+        if (!dragging.current) document.body.style.cursor = "auto";
       }}
+      onPointerMove={handlePointerMove}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
     >
-      <primitive object={scene} />
+      <primitive object={cloned} />
     </group>
   );
 }
 
-/**
- * Drop this anywhere: <MagicCrystal className="w-64 h-64" />
- * It sizes itself to its parent container.
- */
-export default function MagicCrystal({ className = "w-64 h-64" }) {
+export default function MagicCrystal({
+  modelPath = DEFAULT_MODEL_PATH,
+  autoRotateSpeed = 0.6,
+  baseIntensity = 2.5,
+  hoverIntensity = 6,
+  bloomIntensity = 1.4,
+  scale = 50,
+  style,
+  className,
+}) {
   return (
-    <div className={className}>
+    <div
+      className={className}
+      style={{
+        width: "50%",
+        height: "100%",
+        minHeight: 300,
+        cursor: "pointer",
+        ...style,
+      }}
+    >
       <Canvas
-        camera={{ position: [0, 0, 4], fov: 40 }}
-        gl={{ alpha: true }} // transparent background so it drops onto any page bg
+        camera={{ position: [0, 0, 10], fov: 50 }}
+        gl={{ antialias: true }}
+        dpr={[1, 2]}
       >
-        <ambientLight intensity={0.4} />
-        <pointLight position={[3, 3, 3]} intensity={1.2} />
+        <ambientLight intensity={0.6} />
+        <directionalLight position={[3, 5, 2]} intensity={0.8} />
 
         <Suspense fallback={null}>
-          <CrystalModel scale={1} />
-          <Environment preset="night" />
+          <CrystalModel
+            modelPath={modelPath}
+            autoRotateSpeed={autoRotateSpeed}
+            baseIntensity={baseIntensity}
+            hoverIntensity={hoverIntensity}
+            scale={scale}
+          />
         </Suspense>
 
-        {/* Bloom is what actually makes the emissive glow "bleed" visually,
-            rather than just being a bright flat color on the material. */}
         <EffectComposer>
           <Bloom
-            intensity={1.1}
+            intensity={bloomIntensity}
             luminanceThreshold={0.15}
             luminanceSmoothing={0.9}
             mipmapBlur
@@ -104,6 +214,6 @@ export default function MagicCrystal({ className = "w-64 h-64" }) {
   );
 }
 
-// Preload so the model starts fetching as soon as the JS bundle runs,
-// instead of waiting until the component actually mounts.
-useGLTF.preload("./assets/3d-assets/enchanted_crystal/scene.gltf");
+// Preload so the model starts fetching as soon as the module is imported,
+// instead of waiting for first render.
+useGLTF.preload(DEFAULT_MODEL_PATH);

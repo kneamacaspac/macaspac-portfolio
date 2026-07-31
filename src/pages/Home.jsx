@@ -120,8 +120,11 @@ export default function Home({
         </section>
       </FadeInSection>
 
-      <section id="project-button-sec">
-        <MagicCrystal />
+      <section
+        id="project-button-sec"
+        className="relative min-h-screen overflow-hidden bg-[#05030D]  px-6 py-24 sm:px-12 lg:px-20"
+      >
+        <MagicCrystal className="relative min-h-screen overflow-hidden bg-[#05030D]  px-6 py-24 sm:px-12 lg:px-20 cursor-pointer" />
       </section>
     </>
   );
