@@ -88,22 +88,9 @@ export default function Home({
                 I design digital experiences that feel alive and make an impact.
               </h1>
 
-              {/* Content row: copy + button on the left, portrait on the right */}
+              {/* Content row: portrait on the left, copy + button on the right */}
               <div className="relative mt-16 grid grid-cols-1 items-center gap-12 md:grid-cols-2">
-                {/* Left column */}
-                <div className="max-w-md">
-                  <p className="text-sm leading-relaxed text-slate-300 sm:text-base">
-                    I create interactive interfaces that feel alive, combining
-                    thoughtful design and technology to create experiences that
-                    make an impact.
-                  </p>
-
-                  <button className="mt-6 rounded-full border border-slate-500/60 px-5 py-2 text-sm text-slate-200 transition hover:border-purple-400 hover:bg-purple-400/10">
-                    Learn more
-                  </button>
-                </div>
-
-                {/* Right column: portrait with glow + squiggle */}
+                {/* Left column: portrait with glow */}
                 <div className="relative mx-auto flex h-72 w-72 items-center justify-center sm:h-80 sm:w-80">
                   {/* Soft glow behind the portrait */}
                   <div className="absolute h-56 w-56 rounded-full bg-purple-500/40 blur-3xl" />
@@ -115,14 +102,20 @@ export default function Home({
                     className="relative z-10 h-48 w-48 rounded-full object-cover ring-1 ring-purple-500/30 sm:h-56 sm:w-56"
                   />
                 </div>
-              </div>
 
-              {/* Bottom-right supporting paragraph */}
-              <p className="mt-12 max-w-sm text-right text-sm leading-relaxed text-slate-300 sm:ml-auto sm:text-base">
-                I also explore how AI can be integrated into the industry to
-                enhance digital experiences, streamline creative processes, and
-                shape the future of interactive design.
-              </p>
+                {/* Right column */}
+                <div className="max-w-md">
+                  <p className="text-sm leading-relaxed text-slate-300 sm:text-base">
+                    I create interactive interfaces that feel alive, combining
+                    thoughtful design and technology to create experiences that
+                    make an impact.
+                  </p>
+
+                  <button className="mt-6 rounded-full border border-slate-500/60 px-5 py-2 text-sm text-slate-200 transition hover:border-purple-400 hover:bg-purple-400/10">
+                    Learn more
+                  </button>
+                </div>
+              </div>
             </div>
           </section>
         </section>
