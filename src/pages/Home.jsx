@@ -6,6 +6,8 @@ import { useRef, useEffect } from "react";
 import FadeInSection from "../components/transitions/FadeInSection.jsx";
 import MagicCrystal from "../components/3d-components/MagicCrystal1.jsx";
 import MagicCrystal2 from "../components/3d-components/MagicCrystal2.jsx";
+import BlurTextEffect from "../components/ui/BlurTextEffect.jsx";
+import VaporTextEffect from "../components/ui/VaporTextEffect.jsx";
 
 export default function Home({
   avatarSrc = "src/assets/images/nea-photo.png",
@@ -32,9 +34,6 @@ export default function Home({
           id="hero"
           className="flex h-screen flex-col items-center justify-center relative z-10 overflow-hidden"
         >
-          {/* Fade the starfield into the next section's background color */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-80 z-[5] bg-gradient-to-b from-transparent to-[#07040f]" />
-
           <div ref={containerRef} className="relative text-neutral-100">
             {/* Scroll-driven darkening overlay */}
             <motion.div
@@ -45,7 +44,7 @@ export default function Home({
             <section className="h-screen flex flex-col items-center justify-center relative z-0">
               <motion.h1
                 style={{ opacity: heroOpacity }}
-                className="text-8xl mx-10 font-cinzel md:text-8xl ld:8xl tracking-tight font-cinzel-regular text-center"
+                className="text-4xl mx-10 font-cinzel md:text-8xl ld:6xl tracking-tight font-cinzel-regular text-center"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
@@ -66,54 +65,54 @@ export default function Home({
         </section>
       </FadeInSection>
 
-      <FadeInSection>
-        <section id="about-sec">
-          <section className="relative min-h-screen z-10 overflow-hidden px-6 py-24 sm:px-12 lg:px-20">
-            {/* Ambient background glow */}
-            {/* <div className="pointer-events-none absolute inset-0">
-            <div className="absolute left-1/2 top-0 h-[600px] w-[900px] -translate-x-1/2 rounded-full  blur-[120px]" />
-            <div className="absolute right-0 top-1/3 h-[400px] w-[400px] rounded-full bg-fuchsia-600/10 blur-[100px]" />
-          </div> */}
+      <section className="mb-90">
+        <section className="relative min-h-screen z-10 overflow-hidden px-6 py-54 sm:px-12 lg:px-20">
+          {/* <VaporTextEffect className="mx-auto mt-50 z-20 max-w-4xl text-center font-cinzel text-4xl leading-tight tracking-wide text-slate-100 sm:text-5xl">
+              I design digital experiences that feel alive and make an impact.
+            </VaporTextEffect> */}
 
-            <div className="relative mx-auto max-w-6xl">
-              {/* Headline */}
-              <h1 className="mx-auto mt-50  max-w-4xl text-center font-cinzel text-4xl leading-tight tracking-wide text-slate-100 sm:text-5xl">
-                I design digital experiences that feel alive and make an impact.
-              </h1>
+          <VaporTextEffect
+            texts={["Welcome"]}
+            font={{
+              fontFamily: "Sansation Light",
+              fontSize: "48px",
+              fontWeight: 300,
+            }}
+          />
 
-              {/* Content row: portrait on the left, copy + button on the right */}
-              <div className="relative mt-90 grid grid-cols-1 items-center gap-12 md:grid-cols-2">
-                {/* Left column: portrait with glow */}
-                <div className="relative mx-auto flex h-72 w-72 items-center justify-center sm:h-80 sm:w-80">
-                  {/* Soft glow behind the portrait */}
-                  <div className="absolute h-56 w-56 rounded-full bg-purple-500/40 blur-3xl" />
+          <div className="relative mx-auto max-w-6xl mt-[30%]">
+            {/* Content row: portrait on the left, copy + button on the right */}
+            <div className="relative mt-30 grid grid-cols-1 items-center gap-12 md:grid-cols-2 ">
+              {/* Left column: portrait with glow */}
+              <div className="relative mx-auto flex h-72 w-72 items-center justify-center sm:h-80 sm:w-80 lg:h-50 lg:w-80">
+                {/* Soft glow behind the portrait */}
+                <div className="absolute h-56 w-56 rounded-full bg-purple-500/40 blur-3xl " />
 
-                  {/* Portrait */}
-                  <img
-                    src={avatarSrc}
-                    alt="Portrait"
-                    data-star-target
-                    className="relative z-10 h-48 w-48 rounded-full object-cover ring-1 ring-purple-500/30 sm:h-56 sm:w-56"
-                  />
-                </div>
+                {/* Portrait */}
+                <img
+                  src={avatarSrc}
+                  alt="Portrait"
+                  data-star-target
+                  className="relative z-10 h-64 w-64 rounded-full object-cover ring-1 ring-purple-500/30 sm:h-72 sm:w-72 lg:h-106 lg:w-106"
+                />
+              </div>
 
-                {/* Right column */}
-                <div className="max-w-md">
-                  <p className="text-sm leading-relaxed text-slate-300 sm:text-base">
-                    I create interactive interfaces that feel alive, combining
-                    thoughtful design and technology to create experiences that
-                    make an impact.
-                  </p>
+              {/* Right column */}
+              <div className="max-w-md">
+                <p className="text-sm leading-relaxed text-slate-300 sm:text-base">
+                  I create interactive interfaces that feel alive, combining
+                  thoughtful design and technology to create experiences that
+                  make an impact.
+                </p>
 
-                  <button className="mt-6 rounded-full border border-slate-500/60 px-5 py-2 text-sm text-slate-200 transition hover:border-purple-400 hover:bg-purple-400/10">
-                    Learn more
-                  </button>
-                </div>
+                <button className="mt-6 rounded-full border border-slate-500/60 px-5 py-2 text-sm text-slate-200 transition hover:border-purple-400 hover:bg-purple-400/10">
+                  Learn more
+                </button>
               </div>
             </div>
-          </section>
+          </div>
         </section>
-      </FadeInSection>
+      </section>
 
       {/* ---------------------------------------------------------
           Two crystals, staggered diagonally: Graphic Designs
@@ -170,22 +169,24 @@ export default function Home({
 
             <div className="relative mx-auto max-w-6xl">
               {/* Headline */}
-              <h1 className="mx-auto mt-50  max-w-4xl text-center font-cinzel text-4xl leading-tight tracking-wide text-slate-100 sm:text-5xl">
+              <BlurTextEffect className="font-semibold font-white-50 text-white text-2xl sm:text-4xl">
                 I design digital experiences that feel alive and make an impact.
+              </BlurTextEffect>
+            </div>
+
+            <div className="relative mx-auto max-w-6xl">
+              {/* Headline */}
+              <h1 className="mx-auto mt-50  max-w-4xl text-center font-cinzel text-4xl leading-tight tracking-wide text-slate-100 sm:text-5xl">
+                Is design digital experiences that feel alive and make an
+                impact.
               </h1>
             </div>
 
             <div className="relative mx-auto max-w-6xl">
               {/* Headline */}
               <h1 className="mx-auto mt-50  max-w-4xl text-center font-cinzel text-4xl leading-tight tracking-wide text-slate-100 sm:text-5xl">
-                I design digital experiences that feel alive and make an impact.
-              </h1>
-            </div>
-
-            <div className="relative mx-auto max-w-6xl">
-              {/* Headline */}
-              <h1 className="mx-auto mt-50  max-w-4xl text-center font-cinzel text-4xl leading-tight tracking-wide text-slate-100 sm:text-5xl">
-                I design digital experiences that feel alive and make an impact.
+                Is design digital experiences that feel alive and make an
+                impact.
               </h1>
             </div>
           </section>

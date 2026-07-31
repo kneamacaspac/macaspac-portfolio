@@ -6,7 +6,7 @@ export default function HUD() {
   return (
     <div className="fixed inset-0 z-999 m-5 border-[0.5px] border-white/25 flex flex-col justify-between text-neutral-100 pointer-events-none">
       <div className="flex justify-between p-5">
-        <div className="font-sansation">Nea.Design</div>
+        <div className="font-sansation">Nea.UX</div>
         <div className="top-5 right-5 pointer-events-auto">
           <Navbar />
         </div>
