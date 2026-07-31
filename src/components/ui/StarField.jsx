@@ -270,10 +270,16 @@ export default function StarField() {
     camera.position.z = 8;
 
     const COUNT = 1400;
-    const positions = new Float32Array(COUNT * 3);
+    const simPositions = new Float32Array(COUNT * 3); // the "flying through space" physics
+    const renderPositions = new Float32Array(COUNT * 3); // what's actually drawn (blended)
     const speeds = new Float32Array(COUNT);
     const sizes = new Float32Array(COUNT);
     const colorChoice = new Float32Array(COUNT);
+
+    const swirlRadius = new Float32Array(COUNT);
+    const swirlAngleOffset = new Float32Array(COUNT);
+    const swirlSpeed = new Float32Array(COUNT);
+    const swirlTilt = new Float32Array(COUNT);
 
     const palette = [
       new THREE.Color(0xcc00ff), // lightPink
@@ -283,17 +289,23 @@ export default function StarField() {
     ];
 
     function respawn(i, initial) {
-      positions[i * 3 + 0] = (Math.random() * 2 - 1) * 9;
-      positions[i * 3 + 1] = (Math.random() * 2 - 1) * 5.5;
-      positions[i * 3 + 2] = initial ? (Math.random() * 2 - 1) * 14 : -14;
+      simPositions[i * 3 + 0] = (Math.random() * 2 - 1) * 9;
+      simPositions[i * 3 + 1] = (Math.random() * 2 - 1) * 5.5;
+      simPositions[i * 3 + 2] = initial ? (Math.random() * 2 - 1) * 14 : -14;
       speeds[i] = 0.2 + Math.random() * 0.8;
       sizes[i] = Math.random() * 0.5 + 0.1;
       colorChoice[i] = Math.floor(Math.random() * palette.length);
+
+      swirlRadius[i] = 0.5 + Math.random() * 2.2; // how far from the photo this particle orbits
+      swirlAngleOffset[i] = Math.random() * Math.PI * 2; // starting position on the circle
+      swirlSpeed[i] = 0.3 + Math.random() * 0.7; // how fast it spins around
+      swirlTilt[i] = 0.4 + Math.random() * 0.5; // flattens the circle so it looks like an orbit, not a flat ring
     }
     for (let i = 0; i < COUNT; i++) respawn(i, true);
+    renderPositions.set(simPositions);
 
     const geo = new THREE.BufferGeometry();
-    geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    geo.setAttribute("position", new THREE.BufferAttribute(renderPositions, 3));
 
     const colors = new Float32Array(COUNT * 3);
     for (let i = 0; i < COUNT; i++) {
@@ -356,32 +368,86 @@ export default function StarField() {
     window.addEventListener("resize", onResize);
 
     let last = performance.now();
+    const start = last;
     let rafId;
+
+    const _ndc = new THREE.Vector3();
+    function screenToWorld(x, y, depthZ) {
+      const ndcX = (x / window.innerWidth) * 2 - 1;
+      const ndcY = -(y / window.innerHeight) * 2 + 1;
+      _ndc.set(ndcX, ndcY, 0.5).unproject(camera);
+      const dir = _ndc.sub(camera.position).normalize();
+      const distance = (depthZ - camera.position.z) / dir.z;
+      return camera.position.clone().add(dir.multiplyScalar(distance));
+    }
+
+    function clamp01(v) {
+      return Math.max(0, Math.min(1, v));
+    }
+    function lerp(a, b, t) {
+      return a + (b - a) * t;
+    }
 
     function animate() {
       const now = performance.now();
       const dt = Math.min((now - last) / 1000, 0.05);
+      const elapsed = (now - start) / 1000;
       last = now;
 
-      const posAttr = geo.attributes.position;
+      // 1) Run the normal "flying through space" simulation (unchanged physics)
       for (let i = 0; i < COUNT; i++) {
-        let z = posAttr.array[i * 3 + 2];
+        let z = simPositions[i * 3 + 2];
         z += speeds[i] * dt * 4.0;
         if (z > 8) {
           respawn(i, false);
-          posAttr.array[i * 3 + 0] = positions[i * 3 + 0];
-          posAttr.array[i * 3 + 1] = positions[i * 3 + 1];
-          posAttr.array[i * 3 + 2] = positions[i * 3 + 2];
         } else {
-          posAttr.array[i * 3 + 2] = z;
+          simPositions[i * 3 + 2] = z;
         }
       }
-      posAttr.needsUpdate = true;
+
+      // 2) Find the photo on screen and how close it is to center (0 = offscreen, 1 = centered)
+      let targetWorld = null;
+      let progress = 0;
+      const targetEl = document.querySelector("[data-star-target]");
+      if (targetEl) {
+        const rect = targetEl.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+          const cx = rect.left + rect.width / 2;
+          const cy = rect.top + rect.height / 2;
+          targetWorld = screenToWorld(cx, cy, 0);
+          const vh = window.innerHeight;
+          const dist = Math.abs(cy - vh / 2);
+          progress = clamp01(1 - dist / (vh * 0.9));
+        }
+      }
+
+      // 3) Blend each particle's real position toward its swirl position around the photo
+      for (let i = 0; i < COUNT; i++) {
+        let px = simPositions[i * 3 + 0];
+        let py = simPositions[i * 3 + 1];
+        let pz = simPositions[i * 3 + 2];
+
+        if (targetWorld && progress > 0.001) {
+          const angle = swirlAngleOffset[i] + elapsed * swirlSpeed[i];
+          const r = swirlRadius[i];
+          const sx = targetWorld.x + Math.cos(angle) * r;
+          const sy = targetWorld.y + Math.sin(angle) * r * swirlTilt[i];
+          const sz = targetWorld.z + Math.sin(angle * 0.7) * r * 0.3;
+
+          px = lerp(px, sx, progress);
+          py = lerp(py, sy, progress);
+          pz = lerp(pz, sz, progress);
+        }
+
+        renderPositions[i * 3 + 0] = px;
+        renderPositions[i * 3 + 1] = py;
+        renderPositions[i * 3 + 2] = pz;
+      }
+      geo.attributes.position.needsUpdate = true;
 
       camera.position.x += (mouseNX * 0.6 - camera.position.x) * 0.02;
       camera.position.y += (mouseNY * 0.35 - camera.position.y) * 0.02;
       camera.lookAt(0, 0, -5);
-      points.rotation.z += dt * 0.01;
 
       renderer.render(scene, camera);
       rafId = requestAnimationFrame(animate);

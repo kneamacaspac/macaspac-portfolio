@@ -2,7 +2,7 @@
 
 import StarField from "../components/ui/StarField.jsx";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import FadeInSection from "../components/transitions/FadeInSection.jsx";
 import MagicCrystal from "../components/3d-components/MagicCrystal1.jsx";
 import MagicCrystal2 from "../components/3d-components/MagicCrystal2.jsx";
@@ -23,7 +23,7 @@ export default function Home({
 
   return (
     <>
-      <div className="absolute inset-0 z-0">
+      <div className="fixed inset-0 z-0">
         <StarField />
       </div>
 
@@ -45,7 +45,7 @@ export default function Home({
             <section className="h-screen flex flex-col items-center justify-center relative z-0">
               <motion.h1
                 style={{ opacity: heroOpacity }}
-                className="text-4xl mx-10 font-cinzel md:text-7xl tracking-tight font-cinzel-regular text-center"
+                className="text-8xl mx-10 font-cinzel md:text-8xl ld:8xl tracking-tight font-cinzel-regular text-center"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
@@ -61,13 +61,6 @@ export default function Home({
               >
                 Scroll to begin your journey ↓
               </motion.p>
-
-              <div
-                id="herp-crystal-container"
-                className="absolute inset-0 z-[800] flex items-center justify-center pointer-events-none"
-              >
-                <MagicCrystal2 className="h-80 w-80" />
-              </div>
             </section>
           </div>
         </section>
@@ -77,19 +70,19 @@ export default function Home({
         <section id="about-sec">
           <section className="relative min-h-screen z-10 overflow-hidden px-6 py-24 sm:px-12 lg:px-20">
             {/* Ambient background glow */}
-            <div className="pointer-events-none absolute inset-0">
-              <div className="absolute left-1/2 top-0 h-[600px] w-[900px] -translate-x-1/2 rounded-full  blur-[120px]" />
-              <div className="absolute right-0 top-1/3 h-[400px] w-[400px] rounded-full bg-fuchsia-600/10 blur-[100px]" />
-            </div>
+            {/* <div className="pointer-events-none absolute inset-0">
+            <div className="absolute left-1/2 top-0 h-[600px] w-[900px] -translate-x-1/2 rounded-full  blur-[120px]" />
+            <div className="absolute right-0 top-1/3 h-[400px] w-[400px] rounded-full bg-fuchsia-600/10 blur-[100px]" />
+          </div> */}
 
             <div className="relative mx-auto max-w-6xl">
               {/* Headline */}
-              <h1 className="mx-auto max-w-4xl text-center font-serif text-4xl leading-tight tracking-wide text-slate-100 sm:text-5xl">
+              <h1 className="mx-auto mt-50  max-w-4xl text-center font-cinzel text-4xl leading-tight tracking-wide text-slate-100 sm:text-5xl">
                 I design digital experiences that feel alive and make an impact.
               </h1>
 
               {/* Content row: portrait on the left, copy + button on the right */}
-              <div className="relative mt-16 grid grid-cols-1 items-center gap-12 md:grid-cols-2">
+              <div className="relative mt-90 grid grid-cols-1 items-center gap-12 md:grid-cols-2">
                 {/* Left column: portrait with glow */}
                 <div className="relative mx-auto flex h-72 w-72 items-center justify-center sm:h-80 sm:w-80">
                   {/* Soft glow behind the portrait */}
@@ -99,6 +92,7 @@ export default function Home({
                   <img
                     src={avatarSrc}
                     alt="Portrait"
+                    data-star-target
                     className="relative z-10 h-48 w-48 rounded-full object-cover ring-1 ring-purple-500/30 sm:h-56 sm:w-56"
                   />
                 </div>
@@ -126,10 +120,7 @@ export default function Home({
           (top-left) and UI/UX Designs (bottom-right), each with
           its heading tucked partly behind the crystal's glow.
       --------------------------------------------------------- */}
-      <section
-        id="project-button-sec"
-        className="relative bg-[#05030D] overflow-hidden"
-      >
+      <section id="project-button-sec" className="relative overflow-hidden">
         {/* Graphic Designs — crystal upper-left, text trailing below-right of it */}
         <div className="relative h-[440px] w-[440px]">
           <div className="absolute left-40 top-[4%] z-10 h-[500px] w-[300px] sm:h-[500px] sm:w-[500px] lg:h-[800px] lg:w-[800px] cursor-pointer">
@@ -150,7 +141,7 @@ export default function Home({
 
         {/* UI/UX Designs — crystal lower-right, text trailing below-left of it */}
         <div className="relative h-[90vh] w-full">
-          <div className="absolute right-50 top-[30%] z-10 h-[500px] w-[300px] sm:h-[500px] sm:w-[500px] lg:h-[800px] lg:w-[800px] cursor-pointer">
+          <div className="absolute right-50 top-[30%] z-10 h-[500px] w-[500px] sm:h-[500px] sm:w-[500px] lg:h-[800px] lg:w-[800px] cursor-pointer">
             <MagicCrystal2 className="h-full w-full" />
 
             <div className="absolute right-[8%] top-[38%] z-0 max-w-sm text-right sm:right-[10%] sm:top-[42%]">
@@ -167,6 +158,39 @@ export default function Home({
           </div>
         </div>
       </section>
+
+      <FadeInSection>
+        <section id="about-sec">
+          <section className="relative min-h-screen z-10 overflow-hidden px-6 py-24 sm:px-12 lg:px-20">
+            {/* Ambient background glow */}
+            {/* <div className="pointer-events-none absolute inset-0">
+            <div className="absolute left-1/2 top-0 h-[600px] w-[900px] -translate-x-1/2 rounded-full  blur-[120px]" />
+            <div className="absolute right-0 top-1/3 h-[400px] w-[400px] rounded-full bg-fuchsia-600/10 blur-[100px]" />
+          </div> */}
+
+            <div className="relative mx-auto max-w-6xl">
+              {/* Headline */}
+              <h1 className="mx-auto mt-50  max-w-4xl text-center font-cinzel text-4xl leading-tight tracking-wide text-slate-100 sm:text-5xl">
+                I design digital experiences that feel alive and make an impact.
+              </h1>
+            </div>
+
+            <div className="relative mx-auto max-w-6xl">
+              {/* Headline */}
+              <h1 className="mx-auto mt-50  max-w-4xl text-center font-cinzel text-4xl leading-tight tracking-wide text-slate-100 sm:text-5xl">
+                I design digital experiences that feel alive and make an impact.
+              </h1>
+            </div>
+
+            <div className="relative mx-auto max-w-6xl">
+              {/* Headline */}
+              <h1 className="mx-auto mt-50  max-w-4xl text-center font-cinzel text-4xl leading-tight tracking-wide text-slate-100 sm:text-5xl">
+                I design digital experiences that feel alive and make an impact.
+              </h1>
+            </div>
+          </section>
+        </section>
+      </FadeInSection>
     </>
   );
 }
