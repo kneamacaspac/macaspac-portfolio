@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: #05030d;
+}
+
+::selection {
+  background: white;
+  color: black;
+}
+
+@theme {
+  --font-cinzel: "Cinzel Regular", sans-serif;
+  --font-sansation: "Sansation Light", sans-serif;
+
+  --animate-fadein: fadein 1s ease-out forwards;
+
+  @keyframes fadein {
+    0% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 100;
+    }
+  }
+}
+
+@font-face {
+  font-family: "Cinzel Regular";
+  src: url("./assets/fonts/Cinzel-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Sansation Light";
+  src: url("./assets/fonts/Sansation-Light.ttf") format("truetype");
+}

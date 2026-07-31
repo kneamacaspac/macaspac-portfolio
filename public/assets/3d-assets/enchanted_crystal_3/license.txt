@@ -1,0 +1,11 @@
+Model Information:
+* title:	Enchanted Crystal 07
+* source:	https://sketchfab.com/3d-models/enchanted-crystal-07-976eb376647d44d1acc81c25a7118320
+* author:	TheTallOne (https://sketchfab.com/TheTallOne)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Enchanted Crystal 07" (https://sketchfab.com/3d-models/enchanted-crystal-07-976eb376647d44d1acc81c25a7118320) by TheTallOne (https://sketchfab.com/TheTallOne) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
