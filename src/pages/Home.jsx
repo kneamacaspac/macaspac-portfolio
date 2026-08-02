@@ -9,8 +9,8 @@ import MagicCrystal2 from "../components/3d-components/MagicCrystal2.jsx";
 import BlurTextEffect from "../components/ui/BlurTextEffect.jsx";
 import VaporTextEffect from "../components/ui/VaporTextEffect.jsx";
 import ScrollStorySection from "../components/ui/ScrollStorySection.jsx";
-import SmokeCursor from "../components/cursors/SmokeCursor.jsx";
 import Footer from "../components/footer/Footer.jsx";
+import SplashCursor from "../components/cursors/SplashCursor.jsx";
 
 export default function Home({
   avatarSrc = "src/assets/images/nea-photo.png",
@@ -32,7 +32,18 @@ export default function Home({
         <StarField />
       </div>
 
-      <SmokeCursor />
+      <SplashCursor
+        DENSITY_DISSIPATION={2.5}
+        VELOCITY_DISSIPATION={2.5}
+        PRESSURE={0.35}
+        CURL={3}
+        SPLAT_RADIUS={0.38}
+        SPLAT_FORCE={6500}
+        COLOR_UPDATE_SPEED={5}
+        SHADING
+        RAINBOW_MODE={false}
+        COLOR="#5b0da4"
+      />
 
       <FadeInSection>
         <section
