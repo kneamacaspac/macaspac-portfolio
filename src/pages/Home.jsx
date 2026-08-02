@@ -8,6 +8,9 @@ import MagicCrystal from "../components/3d-components/MagicCrystal1.jsx";
 import MagicCrystal2 from "../components/3d-components/MagicCrystal2.jsx";
 import BlurTextEffect from "../components/ui/BlurTextEffect.jsx";
 import VaporTextEffect from "../components/ui/VaporTextEffect.jsx";
+import ScrollStorySection from "../components/ui/ScrollStorySection.jsx";
+import SmokeCursor from "../components/cursors/SmokeCursor.jsx";
+import Footer from "../components/footer/Footer.jsx";
 
 export default function Home({
   avatarSrc = "src/assets/images/nea-photo.png",
@@ -28,6 +31,8 @@ export default function Home({
       <div className="fixed inset-0 z-0">
         <StarField />
       </div>
+
+      <SmokeCursor />
 
       <FadeInSection>
         <section
@@ -82,24 +87,24 @@ export default function Home({
 
           <div className="relative mx-auto max-w-6xl mt-[30%]">
             {/* Content row: portrait on the left, copy + button on the right */}
-            <div className="relative mt-30 grid grid-cols-1 items-center gap-12 md:grid-cols-2 ">
+            <div className="relative mt-30 grid grid-cols-1 items-center gap-20 md:grid-cols-2 ">
               {/* Left column: portrait with glow */}
-              <div className="relative mx-auto flex h-72 w-72 items-center justify-center sm:h-80 sm:w-80 lg:h-50 lg:w-80">
+              <div className="relative mx-auto flex h-72 w-72 items-center justify-center sm:h-80 sm:w-80 lg:h-150 lg:w-150">
                 {/* Soft glow behind the portrait */}
-                <div className="absolute h-56 w-56 rounded-full bg-purple-500/40 blur-3xl " />
+                <div className="absolute h-156 w-156 rounded-full bg-purple-500/10 blur-3xl " />
 
                 {/* Portrait */}
                 <img
                   src={avatarSrc}
                   alt="Portrait"
                   data-star-target
-                  className="relative z-10 h-64 w-64 rounded-full object-cover ring-1 ring-purple-500/30 sm:h-72 sm:w-72 lg:h-106 lg:w-106"
+                  className="relative z-10 h-64 w-64 rounded-full object-cover ring-1 ring-purple-500/30 sm:h-72 sm:w-72 lg:h-86 lg:w-86"
                 />
               </div>
 
               {/* Right column */}
-              <div className="max-w-md">
-                <p className="text-sm leading-relaxed text-slate-300 sm:text-base">
+              <div>
+                <p className="text-sm leading-relaxed lg:text-2xl text-slate-300 w-full sm:text-base">
                   I create interactive interfaces that feel alive, combining
                   thoughtful design and technology to create experiences that
                   make an impact.
@@ -114,16 +119,14 @@ export default function Home({
         </section>
       </section>
 
-      {/* ---------------------------------------------------------
-          Two crystals, staggered diagonally: Graphic Designs
-          (top-left) and UI/UX Designs (bottom-right), each with
-          its heading tucked partly behind the crystal's glow.
-      --------------------------------------------------------- */}
-      <section id="project-button-sec" className="relative overflow-hidden">
+      {/* Project Crystals */}
+      <section className="relative overflow-hidden pb-40">
         {/* Graphic Designs — crystal upper-left, text trailing below-right of it */}
         <div className="relative h-[440px] w-[440px]">
           <div className="absolute left-40 top-[4%] z-10 h-[500px] w-[300px] sm:h-[500px] sm:w-[500px] lg:h-[800px] lg:w-[800px] cursor-pointer">
-            <MagicCrystal className="h-full w-full" />
+            <a href="/projects">
+              <MagicCrystal className="h-full w-full" />
+            </a>
             <div className="absolute left-[6%] top-[8%] z-0 max-w-sm sm:top-[10%] sm:left-[8%]">
               <h2 className="font-cinzel text-4xl leading-tight text-white sm:text-6xl">
                 Graphic
@@ -139,9 +142,11 @@ export default function Home({
         </div>
 
         {/* UI/UX Designs — crystal lower-right, text trailing below-left of it */}
-        <div className="relative h-[90vh] w-full">
+        <div className="relative h-[90vh] w-full mb-40">
           <div className="absolute right-50 top-[30%] z-10 h-[500px] w-[500px] sm:h-[500px] sm:w-[500px] lg:h-[800px] lg:w-[800px] cursor-pointer">
-            <MagicCrystal2 className="h-full w-full" />
+            <a href="/projects">
+              <MagicCrystal2 className="h-full w-full" />
+            </a>
 
             <div className="absolute right-[8%] top-[38%] z-0 max-w-sm text-right sm:right-[10%] sm:top-[42%]">
               <h2 className="font-cinzel text-4xl leading-tight text-white sm:text-6xl">
@@ -158,40 +163,11 @@ export default function Home({
         </div>
       </section>
 
-      <FadeInSection>
-        <section id="about-sec">
-          <section className="relative min-h-screen z-10 overflow-hidden px-6 py-24 sm:px-12 lg:px-20">
-            {/* Ambient background glow */}
-            {/* <div className="pointer-events-none absolute inset-0">
-            <div className="absolute left-1/2 top-0 h-[600px] w-[900px] -translate-x-1/2 rounded-full  blur-[120px]" />
-            <div className="absolute right-0 top-1/3 h-[400px] w-[400px] rounded-full bg-fuchsia-600/10 blur-[100px]" />
-          </div> */}
+      <section className="h-full w-full relative z-10">
+        <ScrollStorySection />
+      </section>
 
-            <div className="relative mx-auto max-w-6xl">
-              {/* Headline */}
-              <BlurTextEffect className="font-semibold font-white-50 text-white text-2xl sm:text-4xl">
-                I design digital experiences that feel alive and make an impact.
-              </BlurTextEffect>
-            </div>
-
-            <div className="relative mx-auto max-w-6xl">
-              {/* Headline */}
-              <h1 className="mx-auto mt-50  max-w-4xl text-center font-cinzel text-4xl leading-tight tracking-wide text-slate-100 sm:text-5xl">
-                Is design digital experiences that feel alive and make an
-                impact.
-              </h1>
-            </div>
-
-            <div className="relative mx-auto max-w-6xl">
-              {/* Headline */}
-              <h1 className="mx-auto mt-50  max-w-4xl text-center font-cinzel text-4xl leading-tight tracking-wide text-slate-100 sm:text-5xl">
-                Is design digital experiences that feel alive and make an
-                impact.
-              </h1>
-            </div>
-          </section>
-        </section>
-      </FadeInSection>
+      <Footer />
     </>
   );
 }
