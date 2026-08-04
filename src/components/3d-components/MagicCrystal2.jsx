@@ -6,6 +6,8 @@ import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+import { useInView } from "react-intersection-observer";
+import { useFrame } from "@react-three/fiber";
 
 /**
  * <EnchantedCrystal /> — a self-contained, glowing 3D crystal viewer.
@@ -17,16 +19,23 @@ import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
  * (Vite serves anything in `public/` from the site root), then point
  * `modelUrl` at wherever you placed scene.gltf.
  */
-export default function MagicCrystal2({
-  modelUrl = "/assets/3d-assets/enchanted_crystal_3/scene.gltf",
+export default function MagicCrystal({
+  modelUrl = "/assets/3d-assets/enchanted_crystal/scene.gltf",
   className = "",
 }) {
+  const { ref, inView } = useInView({ threshold: 0.1 });
+
   const stageRef = useRef(null);
   const canvasRef = useRef(null);
 
   const [loadingText, setLoadingText] = useState("Summoning the crystal…");
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
+
+  const inViewRef = useRef(inView);
+  useEffect(() => {
+    inViewRef.current = inView;
+  }, [inView]);
 
   useEffect(() => {
     const stage = stageRef.current;
@@ -53,7 +62,7 @@ export default function MagicCrystal2({
       0.1,
       100,
     );
-    camera.position.set(4.5, 9, 3);
+    camera.position.set(4.5, 1.5, 12);
 
     const renderer = new THREE.WebGLRenderer({
       canvas,
@@ -131,7 +140,7 @@ export default function MagicCrystal2({
       (gltf) => {
         if (disposed) return;
         crystal = gltf.scene;
-        crystal.scale.set(180, 180, 180);
+        crystal.scale.set(60, 60, 60);
 
         crystal.traverse((child) => {
           if (child.isMesh) {
@@ -236,6 +245,8 @@ export default function MagicCrystal2({
       frameId = requestAnimationFrame(animate);
       const dt = clock.getDelta();
 
+      if (!inViewRef.current) return;
+
       // charge decay (glow pulse settles back down)
       charge += (chargeTarget - charge) * 0.1;
       keyLight.intensity += (60 - keyLight.intensity) * 0.03;
@@ -294,7 +305,13 @@ export default function MagicCrystal2({
   }, [modelUrl]);
 
   return (
-    <div ref={stageRef} className={`crystal-stage ${className}`}>
+    <div
+      ref={(node) => {
+        stageRef.current = node;
+        ref(node);
+      }}
+      className={`crystal-stage ${className}`}
+    >
       <canvas ref={canvasRef} className="crystal-canvas" />
 
       {!loaded && (
