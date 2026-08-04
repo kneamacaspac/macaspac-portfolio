@@ -136,10 +136,10 @@ export default function StarField() {
         vec2 q = vec2( fbm(pos + vec3(0.0,0.0,0.0)),
                        fbm(pos + vec3(5.2,1.3,1.0)) );
 
-        vec2 r = vec2( fbm(pos + 3.5*q + vec3(1.7,9.2,t*0.6)),
-                       fbm(pos + 3.5*q + vec3(8.3,2.8,t*0.4)) );
+        vec2 r = vec2( fbm(pos + 3.5*vec3(q, 0.0) + vec3(1.7,9.2,t*0.6)),
+                       fbm(pos + 3.5*vec3(q, 0.0) + vec3(8.3,2.8,t*0.4)) );
 
-        float pattern = fbm(pos + 3.2*r);
+        float pattern = fbm(pos + 3.2*vec3(r, 0.0));
         pattern = pattern * 0.5 + 0.5;
 
         float ang = uTime * 0.03;
@@ -270,8 +270,8 @@ export default function StarField() {
     camera.position.z = 8;
 
     const COUNT = 1400;
-    const simPositions = new Float32Array(COUNT * 3); // the "flying through space" physics
-    const renderPositions = new Float32Array(COUNT * 3); // what's actually drawn (blended)
+    const simPositions = new Float32Array(COUNT * 3);
+    const renderPositions = new Float32Array(COUNT * 3);
     const speeds = new Float32Array(COUNT);
     const sizes = new Float32Array(COUNT);
     const colorChoice = new Float32Array(COUNT);
@@ -282,10 +282,10 @@ export default function StarField() {
     const swirlTilt = new Float32Array(COUNT);
 
     const palette = [
-      new THREE.Color(0xcc00ff), // lightPink
-      new THREE.Color(0x9900cc), // purple
-      new THREE.Color(0x3f3381), // violet
-      new THREE.Color(0xffffff), // near-white glints, for sparkle variety
+      new THREE.Color(0xcc00ff),
+      new THREE.Color(0x9900cc),
+      new THREE.Color(0x3f3381),
+      new THREE.Color(0xffffff),
     ];
 
     function respawn(i, initial) {
@@ -296,10 +296,10 @@ export default function StarField() {
       sizes[i] = Math.random() * 0.5 + 0.1;
       colorChoice[i] = Math.floor(Math.random() * palette.length);
 
-      swirlRadius[i] = 0.5 + Math.random() * 2.2; // how far from the photo this particle orbits
-      swirlAngleOffset[i] = Math.random() * Math.PI * 2; // starting position on the circle
-      swirlSpeed[i] = 0.3 + Math.random() * 0.7; // how fast it spins around
-      swirlTilt[i] = 0.4 + Math.random() * 0.5; // flattens the circle so it looks like an orbit, not a flat ring
+      swirlRadius[i] = 0.5 + Math.random() * 2.2;
+      swirlAngleOffset[i] = Math.random() * Math.PI * 2;
+      swirlSpeed[i] = 0.3 + Math.random() * 0.7;
+      swirlTilt[i] = 0.4 + Math.random() * 0.5;
     }
     for (let i = 0; i < COUNT; i++) respawn(i, true);
     renderPositions.set(simPositions);
@@ -394,7 +394,6 @@ export default function StarField() {
       const elapsed = (now - start) / 1000;
       last = now;
 
-      // 1) Run the normal "flying through space" simulation (unchanged physics)
       for (let i = 0; i < COUNT; i++) {
         let z = simPositions[i * 3 + 2];
         z += speeds[i] * dt * 4.0;
@@ -405,7 +404,6 @@ export default function StarField() {
         }
       }
 
-      // 2) Find the photo on screen and how close it is to center (0 = offscreen, 1 = centered)
       let targetWorld = null;
       let progress = 0;
       const targetEl = document.querySelector("[data-star-target]");
@@ -421,7 +419,6 @@ export default function StarField() {
         }
       }
 
-      // 3) Blend each particle's real position toward its swirl position around the photo
       for (let i = 0; i < COUNT; i++) {
         let px = simPositions[i * 3 + 0];
         let py = simPositions[i * 3 + 1];
@@ -494,7 +491,6 @@ export default function StarField() {
         }
       `}</style>
 
-      {/* Layer 0: WebGL liquid/noise background */}
       <canvas
         ref={shaderCanvasRef}
         style={{
@@ -506,7 +502,6 @@ export default function StarField() {
           zIndex: 0,
         }}
       />
-      {/* Layer 1: Three.js particle field */}
       <canvas
         ref={starsCanvasRef}
         style={{
@@ -520,7 +515,6 @@ export default function StarField() {
         }}
       />
 
-      {/* Layer 2: film-grain overlay */}
       <div
         style={{
           position: "absolute",

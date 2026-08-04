@@ -42,7 +42,7 @@ export default function Home({
         COLOR_UPDATE_SPEED={5}
         SHADING
         RAINBOW_MODE={false}
-        COLOR="#5b0da4"
+        COLOR="#5b0da480"
       />
 
       <FadeInSection>
